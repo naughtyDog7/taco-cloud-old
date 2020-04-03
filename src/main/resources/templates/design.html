@@ -3,12 +3,17 @@
       xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Taco Cloud</title>
-    <link rel="stylesheet" th:href="@{/styles/styles.css}" />
+    <link rel="stylesheet" th:href="@{/styles/style.css}"/>
 </head>
 <body>
 <h1>Design your taco!</h1>
 <img th:src="@{/images/TacoCloud.jpg}"/>
-<form method="POST" th:object="${design}">
+<form method="POST" th:object="${taco}">
+    <div th:if="${#fields.hasErrors()}">
+            <span class="validation-error">
+                Please correct the problems below and resubmit.
+            </span>
+    </div>
     <div class="grid">
         <div class="ingredient-group" id="wraps">
             <h3>Designate your wrap:</h3>
@@ -50,10 +55,16 @@
                 <span th:text="${ingredient.name}">INGREDIENT</span><br/>
             </div>
         </div>
+        <span class="validation-error"
+              th:if="${#fields.hasErrors('ingredients')}"
+              th:errors="*{ingredients}">Ingredients error</span>
     </div>
     <div>
-            <h3>Name your taco creation:</h3>
-            <input type="text" th:field="*{name}"/>
+        <label>Name: </label>
+        <input type="text" th:field="*{name}">
+        <span class="validation-error"
+              th:if="${#fields.hasErrors('name')}"
+              th:errors="*{name}">Name error</span>
             <br/>
             <button>Submit your taco</button>
     </div>

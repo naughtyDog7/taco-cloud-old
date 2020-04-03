@@ -21,22 +21,37 @@
         <div>
             <label>Name: </label>
             <input type="text" th:field="*{name}">
+            <span class="validation-error"
+                  th:if="${#fields.hasErrors('name')}"
+                  th:errors="*{name}">Name error</span>
         </div>
         <div>
             <label>City: </label>
             <input type="text" th:field="*{city}">
+            <span class="validation-error"
+                  th:if="${#fields.hasErrors('city')}"
+                  th:errors="*{city}">City error</span>
         </div>
         <div>
             <label>Street: </label>
             <input type="text" th:field="*{street}">
+            <span class="validation-error"
+                  th:if="${#fields.hasErrors('street')}"
+                  th:errors="*{street}">Street error</span>
         </div>
         <div>
             <label>Credit card num (in format 8600 **** **** ****) : </label>
-            <input type="text" th:field="*{street}">
+            <input type="text" th:field="*{cardNum}">
+            <span class="validation-error"
+                  th:if="${#fields.hasErrors('cardNum')}"
+                  th:errors="*{cardNum}">CardNum Error</span>
         </div>
         <div>
             <label>Phone number</label>
             <input type="text" th:field="*{phoneNum}">
+            <span class="validation-error"
+                  th:if="${#fields.hasErrors('phoneNum')}"
+                  th:errors="*{phoneNum}">PhoneNum Error</span>
         </div>
         <input type="submit" value="Submit order"/>
     </form>
