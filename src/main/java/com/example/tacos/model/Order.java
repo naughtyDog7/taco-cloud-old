@@ -19,9 +19,6 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToMany(targetEntity = Taco.class)
-    private List<Taco> tacos = new ArrayList<>();
-
     @NotBlank(message = "Name is required")
     @Size(min = 3, message = "Name should be at least 3 characters")
     private String name;
@@ -39,6 +36,16 @@ public class Order {
 
     @CreditCardNumber(message = "Incorrect credit card number")
     private String cardNum;
+//
+//    @ManyToMany(mappedBy = "orders")
+//    private List<Taco> tacos = new ArrayList<>();
+
+    @ManyToMany(targetEntity = Taco.class)
+    private List<Taco> tacos = new ArrayList<>();
+
+    public void addTaco(Taco taco) {
+        tacos.add(taco);
+    }
 
     private LocalDateTime placedAt;
 
@@ -46,8 +53,9 @@ public class Order {
     void placedAt() {
         this.placedAt = LocalDateTime.now();
     }
-
-    public void addDesign(Taco design) {
-        this.tacos.add(design);
-    }
+//
+//    public void addDesign(Taco design) {
+//        this.tacos.add(design);
+//        design.addOrder(this);
+//    }
 }

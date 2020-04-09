@@ -5,11 +5,12 @@ import lombok.Data;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Data
 @Entity
+@Table(name = "tacos")
 public class Taco {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,13 +23,30 @@ public class Taco {
     @NotNull(message = "Please choose items (min 1)")
     @Size(min = 1, message = "At least one item should be chosen")
 
-    @ManyToMany(targetEntity = Ingredient.class)
-    private List<Ingredient> ingredients;
+    @Transient
+    private List<String> ingredients;
 
-    private LocalDateTime createdAt;
+//    @ManyToMany(mappedBy = "tacos")
+    @ManyToMany(targetEntity = Ingredient.class)
+    private List<Ingredient> ingredientsList;
+
+//    @ToString.Exclude
+//    @ManyToMany(cascade = {CascadeType.ALL})
+//    @JoinTable (
+//            name = "taco_orders",
+//            joinColumns = {@JoinColumn(name = "taco_id")},
+//            inverseJoinColumns = {@JoinColumn(name = "order_id")}
+//    )
+//    private List<Order> orders = new ArrayList<>();
+//
+//    public void addOrder(Order order) {
+//        orders.add(order);
+//    }
+
+    private Date createdAt;
 
     @PrePersist
     void createdAt() {
-        createdAt = LocalDateTime.now();
+        createdAt = new Date();
     }
 }
