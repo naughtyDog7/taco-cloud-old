@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Taco Cloud</title>
+</head>
+<body>
+<form method="POST" th:action="@{/logout}">
+    <input type="submit" value="Logout"/>
+</form>
+<img th:src="@{images/TacoCloud.jpg}"/>
+
+<div th:if="${error}">
+    <p>Unable to login. Incorrect username or password</p>
+</div>
+
+<p>Not registered? Click
+    <a th:href="@{/register}">here</a> to register.</p>
+
+<form method="post" th:action="@{/login}" id="loginForm">
+    <label>Username: </label>
+    <input type="text" name="username"/>
+
+    <label>Password: </label>
+    <input type="password" name="password"/>
+
+    <input type="submit" value="Login"/>
+</form>
+</body>
+</html>
