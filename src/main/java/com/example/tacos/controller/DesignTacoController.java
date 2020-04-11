@@ -67,9 +67,11 @@ public class DesignTacoController {
             errors.getAllErrors().forEach((i) -> log.error(i.getDefaultMessage()));
             return "design";
         }
+        log.info("Before saving taco");
         updateIngredientsList(design);
         order.addTaco(design);
         tacoService.save(design);
+        log.info("After saving taco");
         log.info("Processing design: " + design);
         return "redirect:/orders/current";
     }

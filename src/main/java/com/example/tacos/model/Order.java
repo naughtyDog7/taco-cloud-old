@@ -47,6 +47,9 @@ public class Order {
         tacos.add(taco);
     }
 
+    @ManyToOne
+    private User user;
+
     private LocalDateTime placedAt;
 
     @PrePersist

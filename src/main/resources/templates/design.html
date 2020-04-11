@@ -6,6 +6,9 @@
     <link rel="stylesheet" th:href="@{/styles/style.css}"/>
 </head>
 <body>
+<form method="POST" th:action="@{/logout}">
+    <input type="submit" value="Logout"/>
+</form>
 <h1>Design your taco!</h1>
 <img th:src="@{/images/TacoCloud.jpg}"/>
 <form method="POST" th:object="${taco}">
@@ -61,6 +64,7 @@
               th:if="${#fields.hasErrors('name')}"
               th:errors="*{name}">Name error</span>
             <br/>
+        <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
             <button>Submit your taco</button>
     </div>
 </form>

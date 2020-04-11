@@ -32,7 +32,7 @@ public class JPAConfig {
         return entityManagerFactory;
     }
 
-    @Bean
+    @Bean(name = "dataSource")
     public DataSource dataSource() {
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
@@ -58,7 +58,7 @@ public class JPAConfig {
     private Properties hibernateProperties() {
         Properties hibernateProperties = new Properties();
         hibernateProperties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
-   //     hibernateProperties.setProperty("hibernate.hbm2ddl.auto", "create");
+//        hibernateProperties.setProperty("hibernate.hbm2ddl.auto", "create");
         return hibernateProperties;
     }
 }
