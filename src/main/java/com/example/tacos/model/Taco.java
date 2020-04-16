@@ -1,6 +1,7 @@
 package com.example.tacos.model;
 
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -27,6 +28,7 @@ public class Taco {
     private List<String> ingredients;
 
 //    @ManyToMany(mappedBy = "tacos")
+    @ToString.Exclude
     @ManyToMany(targetEntity = Ingredient.class)
     private List<Ingredient> ingredientsList;
 
@@ -48,5 +50,14 @@ public class Taco {
     @PrePersist
     void createdAt() {
         createdAt = new Date();
+    }
+
+    public double totalPrice() {
+        return Double.parseDouble(
+                String.format( "%.2f",
+                ingredientsList
+                .stream()
+                .mapToDouble(Ingredient::getPrice)
+                .sum()));
     }
 }

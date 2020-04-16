@@ -1,17 +1,36 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <title>Taco Cloud</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
 </head>
 <body>
-<form method="POST" th:action="@{/logout}">
-    <input type="submit" value="Logout"/>
-</form>
-<nav>
-
+<nav class="navbar navbar-expand-lg navbar-light bg-light nav-pills">
+    <ul class="navbar-nav justify-content-sm-around  w-50">
+        <li class="nav-item">
+            <a th:href="@{/}" class="nav-link active">MAIN PAGE</a>
+        </li>
+        <li class="nav-item">
+            <a th:href="@{/design}" class="nav-link">DESIGN TACO</a>
+        </li>
+        <li class="nav-item">
+            <a th:href="@{/orders}" class="nav-link">ORDERS</a>
+        </li>
+    </ul>
+    <div class="container w-50 justify-content-end">
+        <form sec:authorize="isAuthenticated()" method="POST" th:action="@{/logout}" class="form-inline my-2 my-sm-0 ">
+                <p th:text="'Hey, ' + ${#authentication.name} + '!'" class="mr-3 h3 font-weight-bold"></p>
+            <button type="submit" class="btn btn-outline-danger">Logout</button>
+        </form>
+        <form sec:authorize="!isAuthenticated()" method="POST" th:action="@{/login}" class="form-inline my-2 my-sm-0">
+            <button type="submit" class="btn btn-outline-success my-2 my-sm-2">Login</button>
+        </form>
+    </div>
 </nav>
 <h1>Welcome to...</h1>
 <img th:src="@{/images/TacoCloud.jpg}"/>

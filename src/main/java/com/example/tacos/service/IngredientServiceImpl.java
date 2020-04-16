@@ -10,7 +10,7 @@ import java.util.List;
 
 @Service
 public class IngredientServiceImpl implements IngredientService {
-    private IngredientDAO ingredientDAO;
+    private final IngredientDAO ingredientDAO;
 
     @Autowired
     public IngredientServiceImpl(IngredientDAO ingredientDAO) {

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Taco Cloud</title>
+    <link rel="stylesheet" th:href="@{/styles/style.css}"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light nav-pills">
+    <ul class="navbar-nav justify-content-sm-around  w-50">
+        <li class="nav-item">
+            <a th:href="@{/}" class="nav-link">MAIN PAGE</a>
+        </li>
+        <li class="nav-item">
+            <a th:href="@{/design}" class="nav-link">DESIGN TACO</a>
+        </li>
+        <li class="nav-item">
+            <a th:href="@{/orders}" class="nav-link active">ORDERS</a>
+        </li>
+    </ul>
+    <div class="container w-50 justify-content-end">
+        <form sec:authorize="isAuthenticated()" method="POST" th:action="@{/logout}" class="form-inline my-2 my-sm-0 ">
+            <p th:text="${#authentication.name}" class="mr-3 h3 font-weight-bold"></p>
+            <button type="submit" class="btn btn-outline-danger">Logout</button>
+        </form>
+        <form sec:authorize="!isAuthenticated()" method="POST" th:action="@{/login}" class="form-inline my-2 my-sm-0">
+            <button type="submit" class="btn btn-outline-success my-2 my-sm-2">Login</button>
+        </form>
+    </div>
+</nav>
+<div class="container" th:if="${orders==null or orders.isEmpty()}">
+    <h1 class="h1">You don't have any orders</h1>
+    <a th:href="@{/design}">DESIGN TACO</a>
+</div>
+<div th:each="order, orderStat : ${orders}">
+    <h1 class="h1">Order #<span th:text="${orderStat.index} + 1"></span></h1><br>
+    <div class="w-100 d-flex flex-row">
+        <div class="container w-75 d-flex flex-column">
+            <div th:each="taco : ${order.tacos}" class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="thead-light">
+                    <tr>
+                        <th colspan="4">Taco <span th:text="${taco.name}"></span></th>
+                    </tr>
+                    <tr>
+                        <th scope="col" style="width: 8%">#</th>
+                        <th scope="col" style="width: 37%">Ingredient Name</th>
+                        <th scope="col" style="width: 10%">Price</th>
+                        <th scope="col" style="width: 20%;">Ingredient</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <div th:each="ingredient, itemstat : ${taco.ingredientsList}">
+                        <tr>
+                            <td th:text="${itemstat.index} + 1"></td>
+                            <td style="text-align: center" th:text="${ingredient.name}"></td>
+                            <td th:text="${ingredient.price} + '$'"></td>
+                            <td style="text-align: center">NO IMAGE</td>
+                        </tr>
+                    </div>
+                    <tr>
+                        <td><b>TOTAL PRICE</b></td>
+                        <td></td>
+                        <td><b th:text="${taco.totalPrice()} + '$'"></b></td>
+                        <td></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div th:if="${!order.ordered}" class="mb-5">
+                <a th:href="@{/design}">ADD TACO</a>
+            </div>
+        </div>
+        <div class="container d-flex w-25 flex-column">
+            <div th:if="${!order.ordered}">
+            <form class="user-form form-signin register-form" method="post"
+                  th:action="@{/orders}" th:object="${creditCardNum}">
+                <h2>Order</h2>
+                <table class="table table-bordered table-striped">
+                    <thead class="thead-light">
+                    <tr>
+                        <th scope="col" style="width: 20%">Taco</th>
+                        <th scope="col" style="width: 80%">Price</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <div th:each="taco, tacoStat : ${order.tacos}">
+                        <tr>
+                            <td th:text="${taco.name}" style="width: 20%"></td>
+                            <td th:text="${taco.totalPrice()} + '$'" style="width: 40%">Price</td>
+                        </tr>
+                    </div>
+                    <tr>
+                        <td><b>TOTAL PRICE</b></td>
+                        <td><b th:text="${order.totalPrice()} + '$'"></b></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <table class="table table-bordered table-striped">
+                    <h2>Order info</h2>
+                    <tr>
+                        <td>Name</td>
+                        <td th:text="${order.name}">NAME</td>
+                    </tr>
+                    <tr>
+                        <td>City</td>
+                        <td th:text="${order.city}">CITY</td>
+                    </tr>
+                    <tr>
+                        <td>Street</td>
+                        <td th:text="${order.street}">STREET</td>
+                    </tr>
+                    <tr>
+                        <td>Phone number</td>
+                        <td th:text="${order.phoneNum}">PHONE NUM</td>
+                    </tr>
+                </table>
+                <span class="validation-error"
+                      th:if="${#fields.hasErrors('cardNum')}"
+                      th:errors="*{cardNum}">Credit card number error</span>
+                <label>Enter card number</label>
+                <input type="text" th:field="*{cardNum}" placeholder="Card Number" class="form-control" style="border-bottom: 0" required>
+                <button type="submit" class="btn btn-large btn-primary btn-block">Order</button>
+            </form>
+            </div>
+            <div class="container d-flex flex-column justify-content-center" th:if="${order.ordered}">
+                <h3>Order #<span th:text="${orderStat.index} + 1"></span> closed<br></h3>
+                <p class="text-info mt-3">Date: <span th:text="${order.placedAt.toLocalDate()}"></span></p>
+                <p class="text-info mt-n3">Time: <span th:text="${order.placedAt.toLocalTime()}"></span></p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

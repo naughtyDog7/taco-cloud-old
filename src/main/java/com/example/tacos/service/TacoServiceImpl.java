@@ -10,7 +10,7 @@ import java.util.List;
 
 @Service
 public class TacoServiceImpl implements TacoService {
-    private TacoDAO tacoDAO;
+    private final TacoDAO tacoDAO;
 
     @Autowired
     public TacoServiceImpl(TacoDAO tacoDAO) {

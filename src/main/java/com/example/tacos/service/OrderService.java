@@ -9,4 +9,5 @@ public interface OrderService {
     Order findOne(long id);
     void save(Order order);
     void delete(Order order);
+    List<Order> findOrdersByUserId(long id);
 }

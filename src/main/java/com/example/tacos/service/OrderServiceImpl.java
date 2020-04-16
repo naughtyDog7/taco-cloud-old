@@ -10,11 +10,16 @@ import java.util.List;
 
 @Service
 public class OrderServiceImpl implements OrderService {
-    private OrderDAO orderDAO;
+    private final OrderDAO orderDAO;
 
     @Autowired
     public OrderServiceImpl(OrderDAO orderDAO) {
         this.orderDAO = orderDAO;
+    }
+
+    @Override
+    public List<Order> findOrdersByUserId(long id) {
+        return orderDAO.findOrdersByUserId(id);
     }
 
     @Override

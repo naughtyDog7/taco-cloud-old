@@ -11,7 +11,8 @@ import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
-    private UserDAO userDAO;
+
+    private final UserDAO userDAO;
 
     @Autowired
     public UserServiceImpl(UserDAO userDAO) {
@@ -25,4 +26,6 @@ public class UserServiceImpl implements UserService {
                 .ofNullable(user)
                 .orElseThrow(() -> new UsernameNotFoundException("User '" + username + "' not found"));
     }
+
+
 }

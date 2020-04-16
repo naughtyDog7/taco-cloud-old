@@ -23,6 +23,7 @@ public class Ingredient {
     @Convert(converter = TypeAttributeConverter.class)
     private final Type type;
 
+    private final double price;
 
     public static enum Type {
         WRAP, PROTEIN, VEGGIES, CHEESE, SAUCE

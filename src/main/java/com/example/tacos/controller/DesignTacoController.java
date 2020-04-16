@@ -1,18 +1,23 @@
 package com.example.tacos.controller;
 
-
 import com.example.tacos.model.Ingredient;
 import com.example.tacos.model.Ingredient.Type;
 import com.example.tacos.model.Order;
 import com.example.tacos.model.Taco;
+import com.example.tacos.model.User;
 import com.example.tacos.service.IngredientService;
+import com.example.tacos.service.OrderService;
 import com.example.tacos.service.TacoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -22,17 +27,17 @@ import java.util.stream.Collectors;
 @Slf4j
 @Controller
 @RequestMapping("/design")
-@SessionAttributes("order")
 public class DesignTacoController {
 
-    private TacoService tacoService;
-    private IngredientService ingredientService;
-
+    private final TacoService tacoService;
+    private final IngredientService ingredientService;
+    private final OrderService orderService;
 
     @Autowired
-    public DesignTacoController(IngredientService ingredientService, TacoService tacoService) {
+    public DesignTacoController(IngredientService ingredientService, TacoService tacoService, OrderService orderService) {
         this.ingredientService = ingredientService;
         this.tacoService = tacoService;
+        this.orderService = orderService;
     }
 
     @ModelAttribute
@@ -62,18 +67,28 @@ public class DesignTacoController {
 
     @PostMapping
     public String processDesign(@Valid @ModelAttribute Taco design,
-                                Errors errors, @ModelAttribute Order order) {
+                                Errors errors, @ModelAttribute Order order,
+                                @AuthenticationPrincipal User user) {
         if (errors.hasErrors()) {
             errors.getAllErrors().forEach((i) -> log.error(i.getDefaultMessage()));
             return "design";
         }
-        log.info("Before saving taco");
         updateIngredientsList(design);
+
+        List<Order> allOrders = orderService.findAll();
+        if (allOrders != null && !allOrders.isEmpty()) {
+            Order lastOrder = allOrders.get(allOrders.size() - 1);
+            if (!lastOrder.isOrdered()) {
+                order = lastOrder;
+            }
+        }
         order.addTaco(design);
+        updateOrder(order, user);
         tacoService.save(design);
-        log.info("After saving taco");
+        orderService.save(order);
+
         log.info("Processing design: " + design);
-        return "redirect:/orders/current";
+        return "redirect:/orders";
     }
 
     private List<Ingredient> filterByType(List<Ingredient> ingredients, Type type) {
@@ -82,10 +97,20 @@ public class DesignTacoController {
                 .collect(Collectors.toList());
     }
 
+    //saving info which we get from registration form to order
+    private void updateOrder(Order order, User user) {
+        order.setName(user.getFullName());
+        order.setCity(user.getCity());
+        order.setStreet(user.getStreet());
+        order.setPhoneNum(user.getPhoneNum());
+        order.setUser(user);
+    }
+
+    //copying ingredients from temp arr into main list
     private void updateIngredientsList(Taco design) {
         design.setIngredientsList(design.getIngredients()
                 .stream()
-                .map(i -> ingredientService.findOne(i))
+                .map(ingredientService::findOne)
                 .collect(Collectors.toList())
         );
     }
