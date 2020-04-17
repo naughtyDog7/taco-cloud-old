@@ -28,4 +28,23 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    @Override
+    public User findUser(String username) {
+        return userDAO.findByUsername(username);
+    }
+
+    @Override
+    public boolean usernameTaken(String username) {
+        return userDAO.existsByUsername(username);
+    }
+
+    @Override
+    public boolean checkUsernamePassword(String username, String password) {
+        return userDAO.existsByUsernameAndPassword(username, password);
+    }
+
+    @Override
+    public User save(User user) {
+        return userDAO.save(user);
+    }
 }

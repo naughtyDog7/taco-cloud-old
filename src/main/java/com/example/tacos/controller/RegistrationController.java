@@ -1,8 +1,8 @@
 package com.example.tacos.controller;
 
-import com.example.tacos.dao.UserDAO;
 import com.example.tacos.model.RegistrationForm;
 import com.example.tacos.model.User;
+import com.example.tacos.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,12 +20,12 @@ import javax.validation.Valid;
 @RequestMapping("/register")
 @Slf4j
 public class RegistrationController {
-    private final UserDAO userDAO;
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public RegistrationController(UserDAO userDAO, PasswordEncoder passwordEncoder) {
-        this.userDAO = userDAO;
+    public RegistrationController(UserService userService, PasswordEncoder passwordEncoder) {
+        this.userService = userService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -42,12 +42,15 @@ public class RegistrationController {
 
     @PostMapping
     public String processRegistration(@Valid RegistrationForm form, Errors errors) {
+        //checks if username exists, if yes, add error and return
+        if (userService.usernameTaken(form.getUsername())) {
+            errors.rejectValue("username", "errorCode", "Username is not available");
+        }
         if (errors.hasErrors()) {
             return "registration";
         }
         User user = form.toUser(passwordEncoder);
-        log.info("user " + user);
-        userDAO.save(user);
+        userService.save(user);
         return "redirect:/login";
     }
 

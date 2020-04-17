@@ -1,6 +1,7 @@
 package com.example.tacos.model;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -13,6 +14,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "orders")
+@Slf4j
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,10 +35,6 @@ public class Order {
     @Pattern(regexp = "(\\+998)?[\\s-]?\\d{2}[\\s-]?\\d{3}[\\s-]?\\d{2}[\\s-]?\\d{2}", message = "Phone number is incorrect")
     private String phoneNum;
 
-//
-//    @ManyToMany(mappedBy = "orders")
-//    private List<Taco> tacos = new ArrayList<>();
-
     @ManyToMany(targetEntity = Taco.class)
     private List<Taco> tacos = new ArrayList<>();
 
@@ -46,7 +44,7 @@ public class Order {
 
     public double totalPrice() {
         return Double.parseDouble(
-                String.format( "%.2f",
+                String.format("%.2f",
                         tacos
                                 .stream()
                                 .mapToDouble(Taco::totalPrice)
@@ -62,13 +60,9 @@ public class Order {
 
     private boolean ordered;
 
+    @PreUpdate
     @PrePersist
     void placedAt() {
         this.placedAt = LocalDateTime.now();
     }
-//
-//    public void addDesign(Taco design) {
-//        this.tacos.add(design);
-//        design.addOrder(this);
-//    }
 }

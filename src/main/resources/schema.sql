@@ -34,7 +34,7 @@ create table if not exists orders
     phoneNum varchar(17) not null,
     cardNum varchar(16),
     user_id bigint not null,
-    placedAt datetime    not null,
+    placedAt datetime,
     ordered boolean,
     constraint orders_pk
         primary key (id)
@@ -54,7 +54,7 @@ alter table orders_tacos
 create table if not exists users
 (
     id       bigint AUTO_INCREMENT,
-    username varchar(50),
+    username varchar(50) unique,
     password varchar(255),
     fullName varchar(50),
     city     varchar(50),

@@ -74,16 +74,10 @@ public class DesignTacoController {
             return "design";
         }
         updateIngredientsList(design);
-
-        List<Order> allOrders = orderService.findAll();
-        if (allOrders != null && !allOrders.isEmpty()) {
-            Order lastOrder = allOrders.get(allOrders.size() - 1);
-            if (!lastOrder.isOrdered()) {
-                order = lastOrder;
-            }
-        }
+        order = orderService.findCurrent(user)
+                .orElse(order);
         order.addTaco(design);
-        updateOrder(order, user);
+        setOrderInfo(order, user);
         tacoService.save(design);
         orderService.save(order);
 
@@ -98,7 +92,7 @@ public class DesignTacoController {
     }
 
     //saving info which we get from registration form to order
-    private void updateOrder(Order order, User user) {
+    private void setOrderInfo(Order order, User user) {
         order.setName(user.getFullName());
         order.setCity(user.getCity());
         order.setStreet(user.getStreet());

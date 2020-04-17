@@ -3,9 +3,11 @@ package com.example.tacos.controller;
 import com.example.tacos.model.CreditCardNum;
 import com.example.tacos.model.Order;
 import com.example.tacos.model.User;
+import com.example.tacos.property.OrderProps;
 import com.example.tacos.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,26 +18,26 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.validation.Valid;
-import java.util.Collections;
 import java.util.List;
 
 @Slf4j
 @Controller
 @RequestMapping("/orders")
 public class OrderController {
+
     private final OrderService orderService;
+    private final OrderProps orderProps;
 
     @Autowired
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService, OrderProps orderProps) {
         this.orderService = orderService;
+        this.orderProps = orderProps;
     }
 
-    private void addOrders(Model model, long userId) {
-        List<Order> allOrders = orderService.findOrdersByUserId(userId);
-        if(allOrders != null && !allOrders.isEmpty()) {
-            model.addAttribute("currentOrder", allOrders.get(allOrders.size() - 1));
-            Collections.reverse(allOrders);
-        }
+    private void addOrders(Model model, User user) {
+        List<Order> allOrders = orderService.findOrdersByUserId(user, PageRequest.of(0, orderProps.getOrdersListLength()));
+        orderService.findCurrent(user)
+                .ifPresent(i -> model.addAttribute("currentOrder", i));
         model.addAttribute("orders", allOrders);
     }
 
@@ -46,7 +48,7 @@ public class OrderController {
 
     @GetMapping
     public String orders(Model model, @AuthenticationPrincipal User user) {
-        addOrders(model, user.getId());
+        addOrders(model, user);
         model.addAttribute("creditCardNumber", creditCardNum());
         return "orders";
     }
@@ -56,35 +58,17 @@ public class OrderController {
     public String processOrder(@Valid CreditCardNum cardNumber, Errors errors,
                                Model model, @AuthenticationPrincipal User user) {
         if (errors.hasErrors()) {
-            addOrders(model, user.getId());
+            addOrders(model, user);
             model.addAttribute("cardNumber", cardNumber);
-            log.info(errors.getFieldErrors().toString());
             return "orders";
         }
-        List<Order> allOrders = orderService.findAll();
-        Order order = allOrders.get(allOrders.size() - 1);
+        Order order = orderService.findCurrent(user)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "There must be current order on this stage"));
         order.setOrdered(true);
         order.setCardNum(cardNumber.getCardNum());
         orderService.save(order);
         log.info("Order completed: " + order);
-        return "redirect:/";
+        return "redirect:/orders";
     }
-
-//
-//    @GetMapping("/current")
-//    public String orderForm() {
-//        return "orderForm";
-//    }
-
-//    @PostMapping
-//    public String processOrder(@Valid Order order, Errors errors, SessionStatus sessionStatus) {
-//        if (errors.hasErrors()) {
-//            return "orderForm";
-//        }
-//        order.setUser(user);
-//        orderService.save(order);
-//        log.info("Order submitted " + order.toString());
-//        sessionStatus.setComplete();
-//        return "redirect:/orders";
-//    }
 }
